@@ -5,11 +5,7 @@ module.exports = function(RED) {
     this.name = config.name
     this.temperature = config.temperature
     this.profiles = config.profiles
-    //this.activities = config.activities
-    this.on('input', function(msg){
-      console.debug("Received " + msg.payload)
-    })
+    this.activities = config.activities
   }
-
   RED.nodes.registerType("mrt-config",MRrT_Configuration);
 }
