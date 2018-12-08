@@ -4,8 +4,8 @@
         <input type="text" id="node-input-name">
     </div>
     <div class="form-row">
-        <label for="node-input-profile"><i class="fa fa-thermometer-half"></i> Profile</label>
-        <input type="text" id="node-input-profile">
+        <label for="node-input-config"><i class="fa fa-thermometer-half"></i>Home Configuration</label>
+        <input type="text" id="node-input-config">
     </div>
 </script>
 <script type="text/x-red" data-help-name="mrt-set-profile">
@@ -18,7 +18,7 @@
         color: '#009900',
         defaults: {
             name: {value:""},
-            profile: {value:"", type:"mrt-config"}
+            config: {value:"", type:"mrt-config"}
         },
         inputs:1,
         outputs:0,

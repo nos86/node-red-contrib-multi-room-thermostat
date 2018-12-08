@@ -1,13 +1,33 @@
 module.exports = function(RED) {
-
-    function MRrT_SetProfile(config) {
-      RED.nodes.createNode(this, config);
-      this.name = config.name
-      this.profile = config.profile
-      this.on('input', function(msg){
-        console.debug("Received " + msg.payload)
-      })
+  "use strict";
+  var CronJob = require('cron').CronJob;
+  function MRrT_SetProfile(config) {
+    RED.nodes.createNode(this, config);
+    this.name = config.name
+    this.config = RED.nodes.getNode(config.config);
+    var node = this
+    this.updateStatus = function(){
+      var fill = "grey"
+      if (this.config.isBoilerOn) fill = "yellow"
+      this.status({fill:fill, shape:"dot", text:"Profile: " + this.config.current_profile})
     }
-  
-    RED.nodes.registerType("mrt-set-profile",MRrT_SetProfile);
+    this.cronjob = new CronJob('* * * * *', function(){
+      console.log("Cron Event")
+      node.updateStatus()
+    });
+    this.cronjob.start();
+    this.on('input', function(msg){
+      console.log(msg)
+      if (this.config.setProfile(msg.payload)){ //Change profile
+        this.updateStatus()
+      }else{
+        this.error("Profile " + msg.payload + " not recognized") //Generate exception
+      }
+    })
+    this.on('close', function(){
+      this.cronjob.stop();
+    })
   }
+
+  RED.nodes.registerType("mrt-set-profile",MRrT_SetProfile);
+}
