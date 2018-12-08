@@ -1,0 +1,116 @@
+<script type="text/x-red" data-template-name="mrt-config">
+    <div class="form-row">
+        <label for="node-config-input-name"><i class="fa fa-tag"></i> Home Name</label>
+        <input type="text" id="node-config-input-name" placeholder="My Home">
+    </div>
+    <div class="form-row">
+        <label for="node-config-input-temperature"><i class="fa fa-thermometer-half"></i> Default Temperature</label>
+        <input type="text" id="node-config-input-temperature">
+    </div>
+    <div class="form-row">
+        <label><i class="fa fa-clipboard-check"></i> List of Profiles</label>
+    </div>
+    <div class="form-row node-config-input-profile-container-row">
+        <ol id="node-config-input-profile-container"></ol>
+    </div>
+    <div class="form-row">
+        <label style="width:100%"><i class="fa fa-power-off"></i> Boiler Activity</label>
+    </div>
+    <div class="form-row node-config-input-boiler-container-row">
+        <ol id="node-config-input-boiler-container"></ol>
+    </div>
+</script>
+
+<script type="text/x-red" data-help-name="mrt-config">
+    <p>This node allows to define all generic profile for Home</p>
+
+</script>
+
+
+<script type="text/javascript">
+    var time_regex = new RegExp(/^(?:[01]\d|2[0-4]):[0-5]\d$/);
+    
+    function text2minutes(text){
+        if (!time_regex.test(text)) return -1;
+        var parts = value.split(':');
+        return 60 * parseInt(parts[0]) + parseInt(parts[1]);
+    }
+    function minutes2text(num){ return String(Math.floor(num/60,0)).padStart(2,'0')+ ":"+String(num%60).padStart(2,'0')}
+
+    $.prototype.generateTime = function generateTime(interval){
+        for (var i = 0; i < 1440; i=i+interval) { 
+            this.append(new Option(minutes2text(i), i))
+        }
+        return this
+    }
+
+    RED.nodes.registerType('mrt-config',{
+        category: 'config',
+        color: '#009900',
+        defaults: {
+            name: {value:"My Home"},
+            temperature: {value:16, required:true},
+            profiles: {value:["Away"]},
+            activities: {value:[{from:0, to:1380}]} 
+        },
+        inputs:1,
+        outputs:0,
+        icon: "trigger.png",
+        label: function() {
+            return this.name||"Set MR-Thermostat Profile";
+        },
+        paletteLabel: 'setprofile',
+        oneditprepare: function() {
+            $('#node-config-input-profile-container').css('min-height','200px').css('min-width','450px').editableList({
+                addItem: function(container,i,opt) {
+                    if (opt instanceof Object){
+                        opt = ""
+                    }
+                    container.css({overflow: 'hidden', whiteSpace: 'nowrap'});
+                    var row = $('<div/>').appendTo(container);
+                    var profile = $('<input/>',{class:"node-config-input-profile-name", style: 'text-align:center; width:350px; margin-right:10px',type:"text"})
+                        .appendTo(row).typedInput({types:['str']});
+                    profile.typedInput('value', opt);
+                },
+                removable: true,
+                sortable: true
+            });
+            for (var i=0; i<this.profiles.length; i++) {
+                $("#node-config-input-profile-container").editableList('addItem',this.profiles[i]);
+            }
+            $('#node-config-input-boiler-container').css('min-height','200px').css('min-width','450px').editableList({
+                addItem: function(container,i,opt) {
+                    if (!opt.hasOwnProperty('from')){opt = {from: 300, to:1380};} 
+                    container.css({overflow: 'hidden', whiteSpace: 'nowrap'});
+                    var row = $('<div/>').appendTo(container);
+                    $('<div/>',{style:"display:inline-block;text-align:right; width:40px; padding-right:10px; box-sizing:border-box;"})
+                        .appendTo(row).text("from");
+                    var from = $('<select/>',{class: "node-input-boiler-from", style: 'text-align:center; width:160px; margin-right:10px; text-align-last:center;'})   
+                        .appendTo(row).generateTime(5).val(opt.from);
+                    $('<div/>',{style:"display:inline-block;text-align:right; width:20px; padding-right:10px; box-sizing:border-box;"})
+                        .appendTo(row).text("to");
+                    var to = $('<select/>',{class: "node-input-boiler-to", style:"text-align:center; width:160px; margin-right:10px; text-align-last:center;"})
+                        .appendTo(row).generateTime(5).val(opt.to);
+                },
+                removable: true,
+                sortable: true
+            });
+            for (var i=0; i<this.activities.length; i++) {
+                $("#node-config-input-boiler-container").editableList('addItem',this.activities[i]);
+            }
+        },
+        oneditsave: function() {
+            var list = $("#node-config-input-profile-container").editableList('items');
+            var node = this;
+            node.profiles = []
+            list.each(function(i) { 
+                node.profiles.push($(this).find(".node-config-input-profile-name").typedInput('value')) 
+            });
+            node.activities = []
+            $("#node-config-input-boiler-container").editableList('items').each(function(i){
+                node.activities.push({from:$(this).find(".node-input-boiler-from").val(),
+                                      to: $(this).find(".node-input-boiler-to").val()});
+            });
+         }
+    });
+</script>

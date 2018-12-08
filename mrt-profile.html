@@ -1,0 +1,30 @@
+<script type="text/x-red" data-template-name="mrt-set-profile">
+    <div class="form-row">
+        <label for="node-input-name"><i class="fa fa-tag"></i>Name</label>
+        <input type="text" id="node-input-name">
+    </div>
+    <div class="form-row">
+        <label for="node-input-profile"><i class="fa fa-thermometer-half"></i> Profile</label>
+        <input type="text" id="node-input-profile">
+    </div>
+</script>
+<script type="text/x-red" data-help-name="mrt-set-profile">
+    <p>This node allows to define all generic profile for Home</p>
+</script>
+
+<script type="text/javascript">
+    RED.nodes.registerType('mrt-set-profile',{
+        category: 'smart home',
+        color: '#009900',
+        defaults: {
+            name: {value:""},
+            profile: {value:"", type:"mrt-config"}
+        },
+        inputs:1,
+        outputs:0,
+        icon: "trigger.png",
+        label: function() {
+            return this.name||"Set Mr.T Profile";
+        }
+    });
+</script>
