@@ -50,8 +50,8 @@
         defaults: {
             name: {value:"My Home"},
             temperature: {value:16, required:true},
-            profiles: {value:["Away"]},
-            activities: {value:[{from:0, to:1380}]} 
+            profiles: {value:["Away"], required:true},
+            activities: {value:[{from:0, to:1380}], required:true} 
         },
         inputs:1,
         outputs:0,
