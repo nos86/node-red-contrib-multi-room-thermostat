@@ -63,14 +63,12 @@
         oneditprepare: function() {
             $('#node-config-input-profile-container').css('min-height','200px').css('min-width','450px').editableList({
                 addItem: function(container,i,opt) {
-                    if (opt instanceof Object){
-                        opt = ""
-                    }
+                    console.log(opt)
+                    if (opt instanceof Object) opt = ""
                     container.css({overflow: 'hidden', whiteSpace: 'nowrap'});
                     var row = $('<div/>').appendTo(container);
                     var profile = $('<input/>',{class:"node-config-input-profile-name", style: 'text-align:center; width:350px; margin-right:10px',type:"text"})
-                        .appendTo(row).typedInput({types:['str']});
-                    profile.typedInput('value', opt);
+                        .appendTo(row).val(opt);
                 },
                 removable: true,
                 sortable: true
@@ -104,7 +102,7 @@
             var node = this;
             node.profiles = []
             list.each(function(i) { 
-                node.profiles.push($(this).find(".node-config-input-profile-name").typedInput('value')) 
+                node.profiles.push($(this).find(".node-config-input-profile-name").val())
             });
             node.activities = []
             $("#node-config-input-boiler-container").editableList('items').each(function(i){
