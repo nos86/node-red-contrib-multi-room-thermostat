@@ -14,5 +14,6 @@
   "author": "Musumeci Salvatore",
   "license": "ISC",
   "dependencies": {
+    "cron": "^1.5.1"
   }
 }

@@ -1,5 +1,6 @@
 module.exports = function(RED) {
-
+  "use strict";
+  var CronJob = require('cron').CronJob;
   function MRrT_Configuration(config) {
     RED.nodes.createNode(this, config);
     this.name = config.name
@@ -27,6 +28,12 @@ module.exports = function(RED) {
       this.isBoilerOn = false
       return false
     }
+    this.cronjob = new CronJob('* * * * *', function(){ node.updateBoilerStatus() });
+    this.cronjob.start();
+    this.on('close', function(){
+      node.cronjob.stop()
+
+    })
   }
   RED.nodes.registerType("mrt-config",MRrT_Configuration);
 }
