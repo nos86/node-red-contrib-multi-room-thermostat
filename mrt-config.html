@@ -63,7 +63,6 @@
         oneditprepare: function() {
             $('#node-config-input-profile-container').css('min-height','200px').css('min-width','450px').editableList({
                 addItem: function(container,i,opt) {
-                    console.log(opt)
                     if (opt instanceof Object) opt = ""
                     container.css({overflow: 'hidden', whiteSpace: 'nowrap'});
                     var row = $('<div/>').appendTo(container);
