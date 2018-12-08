@@ -1,7 +1,7 @@
 module.exports = function(RED) {
   "use strict";
   var CronJob = require('cron').CronJob;
-  function MRrT_SetProfile(config) {
+  function MrT_SetProfile(config) {
     RED.nodes.createNode(this, config);
     this.name = config.name
     this.config = RED.nodes.getNode(config.config);
@@ -28,5 +28,5 @@ module.exports = function(RED) {
     this.on('close', function(){this.cronjob.stop()})
   }
 
-  RED.nodes.registerType("mrt-set-profile",MRrT_SetProfile);
+  RED.nodes.registerType("mrt-set-profile",MrT_SetProfile);
 }
