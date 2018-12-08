@@ -16,6 +16,7 @@ module.exports = function(RED) {
       node.updateStatus()
     });
     this.cronjob.start();
+    this.updateStatus()
     this.on('input', function(msg){
       console.log(msg)
       if (this.config.setProfile(msg.payload)){ //Change profile
@@ -24,9 +25,7 @@ module.exports = function(RED) {
         this.error("Profile " + msg.payload + " not recognized") //Generate exception
       }
     })
-    this.on('close', function(){
-      this.cronjob.stop();
-    })
+    this.on('close', function(){this.cronjob.stop()})
   }
 
   RED.nodes.registerType("mrt-set-profile",MRrT_SetProfile);
