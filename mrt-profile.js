@@ -12,13 +12,11 @@ module.exports = function(RED) {
       this.status({fill:fill, shape:"dot", text:"Profile: " + this.config.current_profile})
     }
     this.cronjob = new CronJob('* * * * *', function(){
-      console.log("Cron Event")
       node.updateStatus()
     });
     this.cronjob.start();
     this.updateStatus()
     this.on('input', function(msg){
-      console.log(msg)
       if (this.config.setProfile(msg.payload)){ //Change profile
         this.updateStatus()
       }else{
