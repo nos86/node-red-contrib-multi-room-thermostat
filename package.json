@@ -1,12 +1,12 @@
 {
   "name": "node-red-contrib-multi-room-thermostat",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Multi Room Thermostat",
   "node-red": {
     "nodes": {
-      "mrt-thermostat": "mrt-thermostat.js",
-      "mrt-config": "mrt-config.js",
-      "mrt-set-profile": "mrt-profile.js"
+      "mrt-thermostat": "mrt-thermostat/mrt-thermostat.js",
+      "mrt-config": "mrt-thermostat/mrt-config.js",
+      "mrt-set-profile": "mrt-thermostat/mrt-profile.js"
     }
   },
   "scripts": {

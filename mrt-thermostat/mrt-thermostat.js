@@ -62,11 +62,10 @@ module.exports = function(RED) {
                         var setPoint = this.getCurrentSetpoint()
                         if (this.heater_status == false & msg.payload<setPoint-this.negative_hysteresis){
                             this.heater_status = true
-                            this.node_status.fill = 'yellow'
                         }else if(this.heater_status & msg.payload>setPoint+this.positive_hysteresis){
                             this.heater_status = false
-                            this.node_status.fill = 'grey'
                         }
+                        this.node_status.fill = (this.heater_status ? 'yellow' : 'grey')
                         this.node_status.text = 'CUR: '+msg.payload + '° | SET: ' + setPoint + '°'
                         msg_target.payload = setPoint
                         if (this.config.isBoilerOn){
