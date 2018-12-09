@@ -86,6 +86,7 @@
         oneditsave: function() {
             var profiles = ["Away", "Working Day", "Holiday", "Vacation"]
             sortFnct = function(a,b){ return result = (a['time'] < b['time']) ? -1 : (a['time'] > b['time']) ? 1 : 0;}
+            function removeDuplicates(myArr) {return myArr.filter((obj, pos, arr) => {return arr.map(mapObj => mapObj['time']).indexOf(obj['time']) === pos;})}
             this.temp_profiles = []
             var temp_profiles = this.temp_profiles
             profiles.forEach(function(profile){
@@ -96,7 +97,7 @@
                     config.push({time:Number($(this).find(".node-input-profile-time").val())
                                 ,temperature: Number($(this).find(".node-input-profile-temperature").val())})
                 })
-                temp_profiles.push({name:profile, setpoints:config.sort(sortFnct)})
+                temp_profiles.push({name:profile, setpoints:removeDuplicates(config.sort(sortFnct))})
             })
         }
     });
