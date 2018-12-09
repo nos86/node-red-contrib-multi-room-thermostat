@@ -4,7 +4,7 @@ module.exports = function(RED) {
   function MRrT_Configuration(config) {
     RED.nodes.createNode(this, config);
     this.name = config.name
-    this.temperature = config.temperature
+    this.temperature = Math.abs(parseFloat(config.temperature)) || 16
     this.profiles = config.profiles
     this.activities = config.activities
     var node = this
