@@ -1,0 +1,103 @@
+<script type="text/x-red" data-template-name="mrt-thermostat">
+    <div class="form-row">
+        <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Room Home">
+    </div>
+    <div class="form-row">
+        <label for="node-input-config"><i class="fa fa-thermometer-half"></i> Home</label>
+        <input type="text" id="node-input-config">
+    </div>
+    <div class="form-row">
+        <label for="node-input-name"><i class="fa fa-tag"></i> Hyst +</label>
+        <input type="text" id="node-input-positive_hysteresis">
+    </div>
+    <div class="form-row">
+        <label for="node-input-name"><i class="fa fa-tag"></i> Hyst -</label>
+        <input type="text" id="node-input-negative_hysteresis">
+    </div>
+
+    <div class="form-row node-input-profiles-container"></div>
+</script>
+
+<script type="text/x-red" data-help-name="mrt-thermostat"></script>
+
+
+<script type="text/javascript">
+    function minutes2text(num){ return String(Math.floor(num/60,0)).padStart(2,'0')+ ":"+String(num%60).padStart(2,'0')}
+    $.prototype.generateTime = function generateTime(interval){
+        for (var i = 0; i < 1440; i=i+interval) { 
+            this.append(new Option(minutes2text(i), i))
+        }
+        return this
+    }
+    RED.nodes.registerType('mrt-thermostat',{
+        category: 'smart home',
+        color: '#009900',
+        defaults: {
+            name: {value:"MrThermostat"},
+            temp_profiles: {value:[{name:"", setpoints:[{time:0, temperature:16}]}], required:true},
+            positive_hysteresis: {value: 0.5, validate:RED.validators.number(), required:true},
+            negative_hysteresis: {value: 0.5, validate:RED.validators.number(), required:true},
+            config: {value:"", type:"mrt-config"},
+            profiles: {value:["Away", "Working Day", "Holiday", "Vacation"]}
+        },
+        inputs:1,
+        outputs:3,
+        icon: "trigger.png",
+        label: function() {
+            return this.name || "MrThermostat";
+        },
+        oneditprepare: function() {
+            var profiles = ["Away", "Working Day", "Holiday", "Vacation"]
+            var section = $('.node-input-profiles-container')
+            for (var idx=0; idx<profiles.length; idx++ ){
+                profile_name = profiles[idx].replace(/[^a-zA-Z0-9]/g, "_")
+                $("<div style='margin-top:20px; text-align:center'>Profile: <b>"+profiles[idx]+"</div></b>").appendTo(section);
+                $('<ol id="node-input-profiles-' + profile_name + '">').appendTo(section).editableList({
+                    addItem: function(container, i, opt){
+                        if (!opt.hasOwnProperty('time')){ opt = {time:0, temperature:16}}
+                        container.css({overflow: 'hidden', whiteSpace: 'nowrap'})
+                        var row = $('<div/>').appendTo(container);
+                        $('<div/>',{style:"display:inline-block;text-align:right; width:40px; padding-right:10px; box-sizing:border-box;"})
+                            .appendTo(row).text("time");
+                        $('<select/>',{class: "node-input-profile-time", style: 'text-align:center; width:80px; margin-right:10px; text-align-last:center;'})   
+                            .appendTo(row).generateTime(5).val(opt.time);
+                        $('<div/>',{style:"display:inline-block;text-align:right; width:100px; padding-right:10px; box-sizing:border-box;"})
+                            .appendTo(row).text("temperature");
+                        $('<input/>',{class: "node-input-profile-temperature", type:"number", min: "10", max:"40", step:'.1'
+                                    , style:"text-align:center; width:80px; margin-right:10px; text-align-last:center;"})
+                            .appendTo(row).val(opt.temperature);
+                    },
+                    removable: true,
+                    sortable: true
+                })
+            }
+            this.temp_profiles.forEach(function(profile){
+                //Check if the current profile is published (currently it should be a misalignment between this node and config node)
+                var list = $('#node-input-profiles-' + profile.name.replace(/[^a-zA-Z0-9]/g, "_")) 
+                if (list.length > 0){
+                    profile.setpoints.forEach(function(setpoint){
+                        list.editableList('addItem',setpoint);
+                    })
+                    
+                }
+            })
+        },
+        oneditsave: function() {
+            var profiles = ["Away", "Working Day", "Holiday", "Vacation"]
+            sortFnct = function(a,b){ return result = (a['time'] < b['time']) ? -1 : (a['time'] > b['time']) ? 1 : 0;}
+            this.temp_profiles = []
+            var temp_profiles = this.temp_profiles
+            profiles.forEach(function(profile){
+                var profile_name = profile.replace(/[^a-zA-Z0-9]/g, "_")
+                var config = []
+                var list = $("#node-input-profiles-" + profile_name).editableList('items');
+                list.each(function(i){
+                    config.push({time:Number($(this).find(".node-input-profile-time").val())
+                                ,temperature: Number($(this).find(".node-input-profile-temperature").val())})
+                })
+                temp_profiles.push({name:profile, setpoints:config.sort(sortFnct)})
+            })
+        }
+    });
+</script>
