@@ -28,6 +28,7 @@ module.exports = function(RED) {
       this.isBoilerOn = false
       return false
     }
+    this.updateBoilerStatus() //Execute updateStatus as soon as node is deployed
     this.cronjob = new CronJob('* * * * *', function(){ node.updateBoilerStatus() });
     this.cronjob.start();
     this.on('close', function(){
