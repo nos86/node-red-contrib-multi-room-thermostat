@@ -48,8 +48,12 @@
             return this.name || "MrThermostat";
         },
         oneditprepare: function() {
-            var profiles = ["Away", "Working Day", "Holiday", "Vacation"]
             var section = $('.node-input-profiles-container')
+            if (this.config==""){
+                $("<div style='margin-top:20px'>Select an Home then save and reopen this window</div>").appendTo(section);
+                return
+            }
+            var profiles = RED.nodes.node(this.config).profiles
             for (var idx=0; idx<profiles.length; idx++ ){
                 profile_name = profiles[idx].replace(/[^a-zA-Z0-9]/g, "_")
                 $("<div style='margin-top:20px; text-align:center'>Profile: <b>"+profiles[idx]+"</div></b>").appendTo(section);
