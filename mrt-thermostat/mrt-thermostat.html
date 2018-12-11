@@ -56,7 +56,7 @@
             var profiles = RED.nodes.node(this.config).profiles
             for (var idx=0; idx<profiles.length; idx++ ){
                 profile_name = profiles[idx].replace(/[^a-zA-Z0-9]/g, "_")
-                $("<div style='margin-top:20px; text-align:center'>Profile: <b>"+profiles[idx]+"</div></b>").appendTo(section);
+                $("<div style='margin-top:20px; text-align:center'>Profile: <b>"+profiles[idx]+"</b></div>").appendTo(section);
                 $('<ol id="node-input-profiles-' + profile_name + '">').appendTo(section).editableList({
                     addItem: function(container, i, opt){
                         if (!opt.hasOwnProperty('time')){ opt = {time:0, temperature:16}}
