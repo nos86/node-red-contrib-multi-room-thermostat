@@ -7,9 +7,11 @@ module.exports = function(RED) {
         this.config = RED.nodes.getNode(config.config)
         this.positive_hysteresis = Math.abs(parseFloat(config.positive_hysteresis)) || 0;
         this.negative_hysteresis = Math.abs(parseFloat(config.negative_hysteresis)) || 0;
+        this.minimum_heating_time = Math.abs(parseFloat(config.minimum_heating_time)) || 0;
         this.profiles = this.config.profiles
         this.temp_profiles = config.temp_profiles
         this.heater_status = false
+        this.heating_since = null
         this.node_status = {fill: 'blue', shape: 'dot', text: 'Loading'}
         var node = this
         this.status(this.node_status)
@@ -62,8 +64,11 @@ module.exports = function(RED) {
                         var setPoint = this.getCurrentSetpoint()
                         if (this.heater_status == false & msg.payload<setPoint-this.negative_hysteresis){
                             this.heater_status = true
+                            this.heating_since = new Date()
                         }else if(this.heater_status & msg.payload>setPoint+this.positive_hysteresis){
-                            this.heater_status = false
+                            if ((new Date()-this.heating_since)>=(60000*this.minimum_heating_time)){ //Transform minute to milliseconds
+                                this.heater_status = false
+                            }
                         }
                         this.node_status.fill = (this.heater_status ? 'yellow' : 'grey')
                         this.node_status.text = 'CUR: '+msg.payload + '° | SET: ' + setPoint + '°'
