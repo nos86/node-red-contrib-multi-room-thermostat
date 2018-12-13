@@ -11,7 +11,7 @@ module.exports = function(RED) {
     this.current_profile = this.profiles[0] //#FIXME: deve pescare dallo storage su file
     this.isBoilerOn = false
     this.setProfile = function(value){
-      if (this.profiles.indexOf(value)>0){
+      if (this.profiles.indexOf(value)>=0){
         this.current_profile = value
         return true
       }else{ return false }
